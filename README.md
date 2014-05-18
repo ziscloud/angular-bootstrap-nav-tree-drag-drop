@@ -42,6 +42,7 @@ But there are other attributes to customize the tree:
         icon-collapse     = "icon-minus-sign"
         on-select         = "my_tree_handler(branch)"
         expand-level      = "2"
+        draggable         = 'leaf'
         initial-selection = "Vegetable">      
     ></abn-tree>
 
