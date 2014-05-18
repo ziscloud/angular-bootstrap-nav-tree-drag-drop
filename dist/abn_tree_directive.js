@@ -7,7 +7,7 @@
     '$timeout', function($timeout) {
       return {
         restrict: 'E',
-        template: "<ul class=\"nav nav-list nav-pills nav-stacked abn-tree\">\n  <li ng-repeat=\"row in tree_rows | filter:{visible:true} track by row.branch.uid\" ng-animate=\"'abn-tree-animate'\" ng-class=\"'level-' + {{ row.level }} + (row.branch.selected ? ' active':'')\" class=\"abn-tree-row\">\n    <a ng-click=\"user_clicks_branch(row.branch)\">\n      <i ng-class=\"row.tree_icon\" ng-click=\"row.branch.expanded = !row.branch.expanded\" class=\"indented tree-icon\"> </i>\n      <span class=\"indented tree-label\">{{ row.label }} </span>\n    </a>\n  </li>\n</ul>",
+        template: "<ul class=\"nav nav-list nav-pills nav-stacked abn-tree\">\n  <li ng-repeat=\"row in tree_rows | filter:{visible:true} track by row.branch.uid\" ng-animate=\"'abn-tree-animate'\" ui-draggable=\"{{ row.draggable }}\" data-value=\"{{row.label}}\" ng-class=\"'level-' + {{ row.level }} + (row.branch.selected ? ' active':'')\"   class=\"abn-tree-row\">\n    <a ng-click=\"user_clicks_branch(row.branch)\">\n      <i ng-class=\"row.tree_icon\" ng-click=\"row.branch.expanded = !row.branch.expanded\" class=\"indented tree-icon\"> </i>\n      <span class=\"indented tree-label\">{{ row.label }} </span>\n    </a>\n  </li>\n</ul>",
         replace: true,
         scope: {
           treeData: '=',
@@ -31,6 +31,11 @@
           if (attrs.iconLeaf == null) {
             attrs.iconLeaf = 'icon-file  glyphicon glyphicon-file  fa fa-file';
           }
+          /*none, all, leaf*/
+          if (attrs.draggable == null) {
+            attrs.draggable = 'none';
+          }
+
           if (attrs.expandLevel == null) {
             attrs.expandLevel = '3';
           }
@@ -183,17 +188,27 @@
               }
             });
             add_branch_to_list = function(level, branch, visible) {
-              var child, child_visible, tree_icon, _i, _len, _ref, _results;
+              var child, child_visible, tree_icon, _i, _len, _ref, _results ,draggable;
               if (branch.expanded == null) {
                 branch.expanded = false;
               }
+              draggable = false;
               if (!branch.children || branch.children.length === 0) {
                 tree_icon = attrs.iconLeaf;
+                if(attrs.draggable == 'all' || attrs.draggable == 'leaf'){
+                  draggable = true;
+                }
               } else {
                 if (branch.expanded) {
                   tree_icon = attrs.iconCollapse;
+                  if(attrs.draggable == 'all'){
+                    draggable = true;
+                  }
                 } else {
                   tree_icon = attrs.iconExpand;
+                  if(attrs.draggable == 'all'){
+                    draggable = true;
+                  }
                 }
               }
               scope.tree_rows.push({
@@ -201,6 +216,7 @@
                 branch: branch,
                 label: branch.label,
                 tree_icon: tree_icon,
+                draggable: draggable,
                 visible: visible
               });
               if (branch.children != null) {
